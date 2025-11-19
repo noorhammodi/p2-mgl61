@@ -1,16 +1,15 @@
 import json
+import os
 from kafka import KafkaProducer, KafkaConsumer
 
-KAFKA_BOOTSTRAP_SERVERS = "localhost:9092"
+# By default, when running *inside Docker network*, we'll use 'kafka:9092'
+KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 
 LAB_TEST_ORDERS_TOPIC = "lab-test-orders"
 LAB_RESULTS_TOPIC = "lab-results"
 
 
 def create_producer():
-    """
-    Returns a Kafka producer that sends JSON messages.
-    """
     return KafkaProducer(
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         value_serializer=lambda v: json.dumps(v).encode("utf-8"),
@@ -18,9 +17,6 @@ def create_producer():
 
 
 def create_consumer(topic, group_id):
-    """
-    Returns a Kafka consumer subscribed to a given topic, reading JSON messages.
-    """
     return KafkaConsumer(
         topic,
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
